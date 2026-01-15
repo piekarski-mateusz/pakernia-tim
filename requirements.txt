@@ -1,0 +1,5 @@
+django>=4.2
+djangorestframework>=3.14
+drf-spectacular>=0.26
+django-cors-headers>=4.0
+
