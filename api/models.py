@@ -43,3 +43,28 @@ class TrainingExercise(models.Model):
 
     def __str__(self):
         return f"{self.name} ({self.sets}x{self.reps})"
+
+
+class TrainingPlan(models.Model):
+    """Pre-defined training plans/templates"""
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='training_plans')
+    name = models.CharField(max_length=255)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.user.username} - {self.name}"
+
+
+class TrainingPlanExercise(models.Model):
+    """Exercises within a training plan template"""
+    training_plan = models.ForeignKey(TrainingPlan, on_delete=models.CASCADE, related_name='exercises')
+    name = models.CharField(max_length=255)
+    sets = models.IntegerField()
+    reps = models.IntegerField()
+    weight = models.FloatField(null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.name} ({self.sets}x{self.reps})"
