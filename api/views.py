@@ -1,13 +1,19 @@
 from rest_framework import viewsets, status, permissions
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes, action
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
-from drf_spectacular.utils import extend_schema
+from drf_spectacular.utils import extend_schema, OpenApiParameter
+from drf_spectacular.types import OpenApiTypes
 
-from .serializers import UserSerializer, LoginSerializer
+from .models import Measurement, TrainingDay, TrainingExercise, TrainingPlan, TrainingPlanExercise
+from .serializers import (
+    UserSerializer, LoginSerializer, MeasurementSerializer,
+    TrainingDaySerializer, TrainingDayCreateSerializer,
+    TrainingExerciseSerializer, TrainingPlanSerializer, TrainingPlanCreateSerializer
+)
 
 
 class RegisterView(APIView):
@@ -77,6 +83,118 @@ class ProfileView(APIView):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class MeasurementViewSet(viewsets.ModelViewSet):
+    serializer_class = MeasurementSerializer
+
+    def get_queryset(self):
+        return Measurement.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+    @action(detail=False, methods=['delete'])
+    def clear_all(self, request):
+        """Delete all measurements for current user"""
+        count = self.get_queryset().delete()[0]
+        return Response({'deleted': count})
+
+
+class TrainingDayViewSet(viewsets.ModelViewSet):
+    serializer_class = TrainingDaySerializer
+
+    def get_queryset(self):
+        return TrainingDay.objects.filter(user=self.request.user)
+
+    @extend_schema(responses={200: dict})
+    @action(detail=False, methods=['get'])
+    def map(self, request):
+        """Get trainings as a map { "YYYY-MM-DD": [exercises] }"""
+        training_days = self.get_queryset()
+        result = {}
+        for day in training_days:
+            exercises = [
+                {'id': ex.id, 'name': ex.name, 'sets': ex.sets, 'reps': ex.reps, 'weight': ex.weight}
+                for ex in day.exercises.all()
+            ]
+            result[str(day.date)] = exercises
+        return Response(result)
+
+    @extend_schema(responses={200: dict})
+    @action(detail=False, methods=['get'], url_path='marked-dates')
+    def marked_dates(self, request):
+        """Get marked dates for calendar view"""
+        dates = self.get_queryset().values_list('date', flat=True)
+        result = {
+            str(d): {'marked': True, 'dotColor': '#aa1b18', 'selected': False}
+            for d in dates
+        }
+        return Response(result)
+
+    @extend_schema(
+        parameters=[OpenApiParameter('date', OpenApiTypes.DATE, location=OpenApiParameter.PATH)],
+        responses={200: TrainingDaySerializer}
+    )
+    @action(detail=False, methods=['get'], url_path='date/(?P<date>[0-9-]+)')
+    def by_date(self, request, date=None):
+        """Get training for specific date"""
+        try:
+            day = TrainingDay.objects.get(user=request.user, date=date)
+            return Response(TrainingDaySerializer(day).data)
+        except TrainingDay.DoesNotExist:
+            return Response({'date': date, 'exercises': []})
+
+    @extend_schema(
+        parameters=[OpenApiParameter('date', OpenApiTypes.DATE, location=OpenApiParameter.PATH)],
+        request=TrainingDayCreateSerializer,
+        responses={200: TrainingDaySerializer}
+    )
+    @action(detail=False, methods=['post'], url_path='date/(?P<date>[0-9-]+)')
+    def save_for_date(self, request, date=None):
+        """Save training for a specific date"""
+        exercises_data = request.data.get('exercises', [])
+
+        if not exercises_data:
+            TrainingDay.objects.filter(user=request.user, date=date).delete()
+            return Response({'date': date, 'exercises': [], 'message': 'Dzień treningowy usunięty'})
+
+        day, created = TrainingDay.objects.get_or_create(user=request.user, date=date)
+
+        day.exercises.all().delete()
+        for ex_data in exercises_data:
+            TrainingExercise.objects.create(
+                training_day=day,
+                name=ex_data['name'],
+                sets=ex_data['sets'],
+                reps=ex_data['reps'],
+                weight=ex_data.get('weight')
+            )
+
+        return Response(TrainingDaySerializer(day).data)
+
+    @extend_schema(
+        parameters=[OpenApiParameter('date', OpenApiTypes.DATE, location=OpenApiParameter.PATH)],
+        responses={200: dict}
+    )
+    @action(detail=False, methods=['delete'], url_path='date/(?P<date>[0-9-]+)')
+    def delete_for_date(self, request, date=None):
+        """Delete training for specific date"""
+        deleted = TrainingDay.objects.filter(user=request.user, date=date).delete()[0]
+        return Response({'success': True, 'deleted': deleted > 0})
+
+
+class TrainingPlanViewSet(viewsets.ModelViewSet):
+    def get_serializer_class(self):
+        if self.action in ['create', 'update', 'partial_update']:
+            return TrainingPlanCreateSerializer
+        return TrainingPlanSerializer
+
+    def get_queryset(self):
+        return TrainingPlan.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
 
 @api_view(['GET'])
