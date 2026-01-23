@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 
 
 class Measurement(models.Model):
-    """Body measurements for progress tracking"""
+    """Pomiary ciała do śledzenia postępów"""
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='measurements')
     date = models.DateField()
     chest = models.FloatField()
@@ -20,7 +20,7 @@ class Measurement(models.Model):
 
 
 class TrainingDay(models.Model):
-    """Training day with exercises"""
+    """Dzień treningowy z ćwiczeniami"""
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='training_days')
     date = models.DateField()
     created_at = models.DateTimeField(auto_now_add=True)
@@ -34,7 +34,7 @@ class TrainingDay(models.Model):
 
 
 class TrainingExercise(models.Model):
-    """Individual exercise within a training day"""
+    """Pojedyncze ćwiczenie w dniu treningowym"""
     training_day = models.ForeignKey(TrainingDay, on_delete=models.CASCADE, related_name='exercises')
     name = models.CharField(max_length=255)
     sets = models.IntegerField()
@@ -46,7 +46,7 @@ class TrainingExercise(models.Model):
 
 
 class TrainingPlan(models.Model):
-    """Pre-defined training plans/templates"""
+    """Predefiniowane plany/szablony treningowe"""
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='training_plans')
     name = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -59,7 +59,7 @@ class TrainingPlan(models.Model):
 
 
 class TrainingPlanExercise(models.Model):
-    """Exercises within a training plan template"""
+    """Ćwiczenia w szablonie planu treningowego"""
     training_plan = models.ForeignKey(TrainingPlan, on_delete=models.CASCADE, related_name='exercises')
     name = models.CharField(max_length=255)
     sets = models.IntegerField()
