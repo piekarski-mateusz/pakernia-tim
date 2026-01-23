@@ -1,4 +1,5 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack"
+import { createNativeStackNavigator } from "@react-navigation/native-stack"
 import CustomDrawer from "./Drawer"
 
 const Stack = createNativeStackNavigator()
@@ -9,13 +10,14 @@ const optionScreen = {
 
 export default function StackNavigation() {
     return (
-        <Stack.Navigator initialRouteName="HomeStack">
-
+        <Stack.Navigator initialRouteName="Home">
             <Stack.Screen
-                name="HomeStack"
+                name="Home"
                 component={CustomDrawer}
                 options={optionScreen}
             />
+     
+
         </Stack.Navigator>
     )
 }

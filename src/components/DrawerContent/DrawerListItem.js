@@ -3,10 +3,13 @@ import { Text } from "react-native-paper";
 import styles from "@utils/styles";
 
 /**
- * @param icon ikona wyświetlana w menu szuflady
- * @param title tytuł wyświetlany w menu szuflady
- * @param link nazwa ekranu z src/navigation/drawer do którego prowadzi nawigacja
- * @param handler funkcja realizująca przejście do innego ekranu
+ *
+ * @param icon it is displayed in drawer menu
+ * @param title it is displayed in drawer menu
+ * @param link it is name in src/navigation/drawer that move you to given screen
+ * @param handler it function reference that realizes move to another screen
+ *
+ *
  */
 const DrawerListItem = ({ icon, title, link, handler }) => {
   return (
