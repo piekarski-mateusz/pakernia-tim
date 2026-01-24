@@ -1,5 +1,5 @@
 import React from "react";
-import { Image, View, Pressable, ScrollView} from "react-native";
+import { Image, View, ScrollView} from "react-native";
 import logo from "@public/big-logo.png";
 import { TextInput, Text } from "react-native-paper";
 import styles from "@utils/styles";
@@ -9,7 +9,6 @@ import Button from "@components/Button/Button";
 const LoginForm = ({
   authenticate,
   goToRegister,
-  goToForgorPassword,
   email,
   setEmail,
   password,
@@ -51,15 +50,11 @@ const LoginForm = ({
             />
           </View>
 
-          <View style={styles.loginForgotPasswordWrapper}>
+          <View style={styles.centerContent}>
             <Button 
               name={loading ? "Logowanie..." : "Zaloguj"} 
               handler={authenticate} 
             />
-
-            <Pressable onPress={goToForgorPassword}>
-              <Text style={styles.text}>Zapomniałem hasło</Text>
-            </Pressable>
           </View>
 
           <View style={styles.centerContent}>

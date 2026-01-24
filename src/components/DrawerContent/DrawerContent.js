@@ -5,9 +5,10 @@ import colors from "@utils/colors"
 import { Entypo } from "@expo/vector-icons"
 import { FontAwesome } from "@expo/vector-icons"
 import { FontAwesome6, MaterialCommunityIcons} from "@expo/vector-icons"
+import { MaterialIcons } from "@expo/vector-icons"
 
 
-const CustomDrawer = ({ navigateToScreen, navigateToStatistic }) => {
+const CustomDrawer = ({ navigateToScreen, navigateToStatistic, handleLogout }) => {
     return (
         <View style={styles.drawerWrapper}>
             <DrawerListItem
@@ -65,6 +66,20 @@ const CustomDrawer = ({ navigateToScreen, navigateToStatistic }) => {
                     />
                 }
             />
+            <View style={{ marginTop: 'auto', paddingTop: 20 }}>
+                <DrawerListItem
+                    title="Wyloguj"
+                    link=""
+                    handler={handleLogout}
+                    icon={
+                        <MaterialIcons
+                            name="logout"
+                            size={24}
+                            color={colors.primary}
+                        />
+                    }
+                />
+            </View>
         </View>
     )
 }

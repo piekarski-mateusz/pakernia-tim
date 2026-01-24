@@ -33,14 +33,9 @@ const LoginFormContainer = ({ navigation }) => {
         navigation.navigate("Register")
     }
 
-    const goToForgorPassword = () => {
-        navigation.navigate("ForgotPassword")
-    }
-
     const props = {
         authenticate: authenticate,
         goToRegister: goToRegister,
-        goToForgorPassword: goToForgorPassword,
         email: email,
         setEmail: setEmail,
         password: password,
