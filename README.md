@@ -4,87 +4,118 @@ Aplikacja mobilna i webowa do śledzenia treningów i postępów.
 
 ## Wymagania
 
-- **Node.js** 18+ 
+- **Node.js** 18+
 - **Python** 3.10+ (tylko dla lokalnego backendu)
-- **Expo Go** (aplikacja na telefon)
+- **Expo Go** (aplikacja na telefon - opcjonalnie)
+
+## Struktura projektu
+
+```text
+pakernia-tim/
+├── .env                 ← plik konfiguracyjny (tylko dla lokalnego backendu)
+├── backend/             ← serwer Django
+│   ├── manage.py
+│   ├── requirements.txt
+│   └── ...
+├── src/                 ← kod frontendowy
+├── app.config.js        ← konfiguracja Expo
+└── package.json
+```
 
 ---
 
-## Szybki start (Azure backend)
+## Opcja 1: Szybki start (Azure backend)
 
+Frontend łączy się z backendem hostowanym na Azure.
+
+### Krok 1: Zainstaluj zależności
 
 ```bash
-# 1. Zainstaluj zależności
 npm install
-
-# 2. Utwórz plik .env z adresem Azure API
-echo "API_URL=https://pakernia-api.azurewebsites.net/api" > .env
-
-# 3. Uruchom aplikację
-npx expo start
 ```
 
-**Dostęp do aplikacji:**
-- **Przeglądarka:** wciśnij `w` w terminalu lub otwórz `http://localhost:8081`
-- **Telefon:** zeskanuj kod QR aplikacją Expo Go
-
-### Alternatywne komendy uruchomienia
+### Krok 2: Uruchom aplikację
 
 ```bash
-# Standardowy start
-npx expo start
-
-# Start z tunelem (dla dostępu z telefonu przez internet)
 npx expo start --tunnel
-
-# Tylko web
-npx expo start --web
-# lub
-npm run web
 ```
+
+### Dostęp do aplikacji
+
+| Platforma        | Jak uruchomić                                              |
+|------------------|-----------------------------------------------------------|
+| **Przeglądarka** | Wciśnij `w` w terminalu lub otwórz `http://localhost:8081` |
+| **Telefon**      | Zeskanuj kod QR aplikacją Expo Go                          |
 
 ---
 
 ## Opcja 2: Lokalny backend + Lokalny frontend
 
-### 1. Backend (Django)
+Oba serwery uruchomione lokalnie.
+
+### Krok 1: Uruchom backend (Django)
+
+Otwórz terminal i przejdź do folderu `backend/`:
 
 ```bash
-# Utwórz środowisko wirtualne
+cd backend
+```
+
+Utwórz i aktywuj środowisko wirtualne:
+
+```bash
+# Linux/Mac
 python3 -m venv venv
+source venv/bin/activate
 
-# Aktywuj środowisko
-source venv/bin/activate        # Linux/Mac
-# lub: venv\Scripts\activate    # Windows
+# Windows
+python -m venv venv
+venv\Scripts\activate
+```
 
-# Zainstaluj zależności
+Zainstaluj zależności i uruchom serwer:
+
+```bash
 pip install -r requirements.txt
-
-# Uruchom migracje bazy danych
 python manage.py migrate
-
-# Uruchom serwer
 python manage.py runserver
 ```
 
-Backend będzie dostępny pod: `http://localhost:8000/api`
+Backend działa pod: `http://localhost:8000/api`
 
-### 2. Frontend (Expo)
+### Krok 2: Uruchom frontend (Expo)
 
-W nowym terminalu:
+Otwórz **nowy terminal** i wróć do głównego folderu projektu.
+
+Zainstaluj zależności:
 
 ```bash
-# Zainstaluj zależności (jeśli jeszcze nie zainstalowane)
 npm install
+```
 
-# Utwórz plik .env z adresem lokalnego API
+Utwórz plik `.env` w **głównym folderze projektu** (tam gdzie `package.json`):
+
+```text
+API_URL=http://localhost:8000/api
+```
+
+Lub użyj komendy:
+
+```bash
 echo "API_URL=http://localhost:8000/api" > .env
+```
 
-# Uruchom aplikację
+Uruchom aplikację:
+
+```bash
 npx expo start
 ```
 
-**Dostęp do aplikacji:**
-- **Przeglądarka:** wciśnij `w` w terminalu lub otwórz `http://localhost:8081`
-- **Telefon:** zeskanuj kod QR aplikacją Expo Go
+Frontend działa pod: `http://localhost:8081`
 
+### Dostęp do aplikacji (lokalnie)
+
+| Platforma        | Jak uruchomić                                              |
+|------------------|-----------------------------------------------------------|
+| **Przeglądarka** | Wciśnij `w` w terminalu lub otwórz `http://localhost:8081` |
+| **Telefon**      | Zeskanuj kod QR aplikacją Expo Go                          |
