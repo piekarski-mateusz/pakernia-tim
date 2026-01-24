@@ -7,6 +7,9 @@ import DrawerHeaderContainer from "@components/DrawerHeader/DrawerHeaderContaine
 import ExcerciseDetails from "../screens/Exercises/ExcerciseDetails"
 import ExcerciseList from "../screens/Exercises/ExcerciseList"
 import AtlasList from "../screens/AtlasList/AtlasList"
+import Progress from "../screens/Progress/Progress"
+import ProgressList from "../screens/ProgressList/ProgressList"
+import ProgressChartScreen from "../screens/ProgressChart/ProgressChartScreen";
 
 const Drawer = createDrawerNavigator()
 
@@ -46,6 +49,28 @@ export default function CustomDrawer(props) {
                     headerShown: true,
                 }}
             />
+                 <Drawer.Screen
+                name="Progress"
+                component={Progress}
+                options={{
+                    headerShown: true,
+                }}
+            />
+             <Drawer.Screen
+                name="ProgressList"
+                component={ProgressList}
+                options={{
+                    headerShown: true,
+                }}
+            />
+            <Drawer.Screen
+                name="ProgressChartScreen"
+                component={ProgressChartScreen}
+                 options={{
+                        headerShown: true,
+                        title: "Wykresy postępów" 
+        }}  
+/>
                   </Drawer.Navigator>
     )
 }
