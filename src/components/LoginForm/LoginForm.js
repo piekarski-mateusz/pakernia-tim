@@ -50,12 +50,10 @@ const LoginForm = ({
             />
           </View>
 
-          <View style={styles.centerContent}>
-            <Button 
-              name={loading ? "Logowanie..." : "Zaloguj"} 
-              handler={authenticate} 
-            />
-          </View>
+          <Button 
+            name={loading ? "Logowanie..." : "Zaloguj"} 
+            handler={authenticate} 
+          />
 
           <View style={styles.centerContent}>
             <Text style={styles.text}>lub</Text>

@@ -80,12 +80,10 @@ const RegisterForm = ({
           />
         </View>
 
-        <View style={styles.spacing}>
-          <ButtonWithoutMargin 
-            name={loading ? "Rejestracja..." : "Zarejestruj"} 
-            handler={createAccount} 
-          />
-        </View>
+        <ButtonWithoutMargin 
+          name={loading ? "Rejestracja..." : "Zarejestruj"} 
+          handler={createAccount} 
+        />
 
         <View style={styles.centerContent}>
           <Text style={styles.text}>lub</Text>
