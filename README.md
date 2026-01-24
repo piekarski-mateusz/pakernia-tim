@@ -5,67 +5,86 @@ Aplikacja mobilna i webowa do śledzenia treningów i postępów.
 ## Wymagania
 
 - **Node.js** 18+ 
-- **Python** 3.10+
+- **Python** 3.10+ (tylko dla lokalnego backendu)
 - **Expo Go** (aplikacja na telefon)
 
 ---
 
-## Opcja 1: Lokalny backend + Lokalny frontend
+## Szybki start (Azure backend)
 
-### Backend
-
-```bash
-cd Pakernia/backend
-python3 -m venv venv
-source venv/bin/activate        # Linux
-# lub: venv\Scripts\activate    # Windows
-pip install -r requirements.txt
-python manage.py migrate
-python manage.py runserver
-```
-
-Backend: `http://localhost:8000/api`
-
-### Frontend
 
 ```bash
-cd Pakernia
+# 1. Zainstaluj zależności
 npm install
+
+# 2. Utwórz plik .env z adresem Azure API
+echo "API_URL=https://pakernia-api.azurewebsites.net/api" > .env
+
+# 3. Uruchom aplikację
+npx expo start
 ```
 
-Utwórz plik `.env`:
-```env
-API_URL=http://localhost:8000/api
-```
-
-Uruchom:
-```bash
-npx expo start --tunnel
-```
-
-- **Przeglądarka:** wciśnij `w` lub otwórz `http://localhost:8081`
+**Dostęp do aplikacji:**
+- **Przeglądarka:** wciśnij `w` w terminalu lub otwórz `http://localhost:8081`
 - **Telefon:** zeskanuj kod QR aplikacją Expo Go
+
+### Alternatywne komendy uruchomienia
+
+```bash
+# Standardowy start
+npx expo start
+
+# Start z tunelem (dla dostępu z telefonu przez internet)
+npx expo start --tunnel
+
+# Tylko web
+npx expo start --web
+# lub
+npm run web
+```
 
 ---
 
-## Opcja 2: Azure backend + Lokalny frontend
+## Opcja 2: Lokalny backend + Lokalny frontend
 
-Nie wymaga uruchamiania backendu
+### 1. Backend (Django)
 
 ```bash
-cd Pakernia
+# Utwórz środowisko wirtualne
+python3 -m venv venv
+
+# Aktywuj środowisko
+source venv/bin/activate        # Linux/Mac
+# lub: venv\Scripts\activate    # Windows
+
+# Zainstaluj zależności
+pip install -r requirements.txt
+
+# Uruchom migracje bazy danych
+python manage.py migrate
+
+# Uruchom serwer
+python manage.py runserver
+```
+
+Backend będzie dostępny pod: `http://localhost:8000/api`
+
+### 2. Frontend (Expo)
+
+W nowym terminalu:
+
+```bash
+# Zainstaluj zależności (jeśli jeszcze nie zainstalowane)
 npm install
+
+# Utwórz plik .env z adresem lokalnego API
+echo "API_URL=http://localhost:8000/api" > .env
+
+# Uruchom aplikację
+npx expo start
 ```
 
-Utwórz plik `.env`:
-```env
-API_URL=https://pakernia-api.azurewebsites.net/api
-```
-
-Uruchom:
-```bash
-npx expo start --tunnel
-```
-
-- **Przeglądarka:** wciśnij `w` lub otwórz `http://localhost:8081`
+**Dostęp do aplikacji:**
+- **Przeglądarka:** wciśnij `w` w terminalu lub otwórz `http://localhost:8081`
 - **Telefon:** zeskanuj kod QR aplikacją Expo Go
+
