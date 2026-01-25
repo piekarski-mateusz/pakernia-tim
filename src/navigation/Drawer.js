@@ -10,6 +10,7 @@ import AtlasList from "../screens/AtlasList/AtlasList"
 import Progress from "../screens/Progress/Progress"
 import ProgressList from "../screens/ProgressList/ProgressList"
 import ProgressChartScreen from "../screens/ProgressChart/ProgressChartScreen";
+import TrainingDayScreen from "../screens/Training/TrainingDayScreen";
 
 const Drawer = createDrawerNavigator()
 
@@ -71,6 +72,14 @@ export default function CustomDrawer(props) {
                         title: "Wykresy postępów" 
         }}  
 />
-                  </Drawer.Navigator>
+            <Drawer.Screen
+                name="TrainingDayScreen"
+                component={TrainingDayScreen}
+                options={{
+                    headerShown: true,
+                    title: "Trening"
+                }}
+            />
+        </Drawer.Navigator>
     )
 }

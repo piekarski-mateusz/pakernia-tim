@@ -121,40 +121,50 @@ class TrainingDayViewSet(viewsets.ModelViewSet):
         }
         return Response(result)
 
-    @action(detail=False, methods=['get'], url_path='date/(?P<date>[0-9-]+)')
+    @action(detail=False, methods=['get', 'post', 'delete'], url_path='date/(?P<date>[0-9-]+)')
     def by_date(self, request, date=None):
-        try:
-            day = TrainingDay.objects.get(user=request.user, date=date)
+        """Obsługuje GET, POST i DELETE dla konkretnej daty treningu"""
+        if request.method == 'GET':
+            try:
+                day = TrainingDay.objects.get(user=request.user, date=date)
+                return Response(TrainingDaySerializer(day).data)
+            except TrainingDay.DoesNotExist:
+                return Response({'date': date, 'exercises': []})
+        
+        elif request.method == 'POST':
+            exercises_data = request.data.get('exercises', [])
+
+            if not exercises_data:
+                TrainingDay.objects.filter(user=request.user, date=date).delete()
+                return Response({'date': date, 'exercises': [], 'message': 'Dzień treningowy usunięty'})
+
+            day, created = TrainingDay.objects.get_or_create(user=request.user, date=date)
+
+            day.exercises.all().delete()
+            for ex_data in exercises_data:
+                # Konwertuj pusty string na None dla weight
+                weight = ex_data.get('weight')
+                if weight == '' or weight is None:
+                    weight = None
+                else:
+                    try:
+                        weight = float(weight)
+                    except (ValueError, TypeError):
+                        weight = None
+                
+                TrainingExercise.objects.create(
+                    training_day=day,
+                    name=ex_data.get('title', ex_data.get('name', '')),
+                    sets=int(ex_data.get('sets', 0) or 0),
+                    reps=int(ex_data.get('reps', 0) or 0),
+                    weight=weight
+                )
+
             return Response(TrainingDaySerializer(day).data)
-        except TrainingDay.DoesNotExist:
-            return Response({'date': date, 'exercises': []})
-
-    @action(detail=False, methods=['post'], url_path='date/(?P<date>[0-9-]+)')
-    def save_for_date(self, request, date=None):
-        exercises_data = request.data.get('exercises', [])
-
-        if not exercises_data:
-            TrainingDay.objects.filter(user=request.user, date=date).delete()
-            return Response({'date': date, 'exercises': [], 'message': 'Dzień treningowy usunięty'})
-
-        day, created = TrainingDay.objects.get_or_create(user=request.user, date=date)
-
-        day.exercises.all().delete()
-        for ex_data in exercises_data:
-            TrainingExercise.objects.create(
-                training_day=day,
-                name=ex_data['name'],
-                sets=ex_data['sets'],
-                reps=ex_data['reps'],
-                weight=ex_data.get('weight')
-            )
-
-        return Response(TrainingDaySerializer(day).data)
-
-    @action(detail=False, methods=['delete'], url_path='date/(?P<date>[0-9-]+)')
-    def delete_for_date(self, request, date=None):
-        deleted = TrainingDay.objects.filter(user=request.user, date=date).delete()[0]
-        return Response({'success': True, 'deleted': deleted > 0})
+        
+        elif request.method == 'DELETE':
+            deleted = TrainingDay.objects.filter(user=request.user, date=date).delete()[0]
+            return Response({'success': True, 'deleted': deleted > 0})
 
 
 class TrainingPlanViewSet(viewsets.ModelViewSet):
